@@ -25,10 +25,10 @@ Suivez les étapes ci-dessous pour configurer le projet localement :
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/votre-utilisateur/galaxy-market.git
+git clone https://github.com/ridakourra/ecommerce_v2.git
 
 # Accéder au dossier du projet
-cd galaxy-market
+cd ecommerce_v2
 
 # Installer les dépendances PHP
 composer install
@@ -71,15 +71,6 @@ npm run dev
 ### Option 2 : Script Composer
 ```bash
 composer run dev
-```
-
-> Note : Ajoutez dans `composer.json` :
-```json
-{
-  "scripts": {
-     "dev": "php artisan serve & npm run dev"
-  }
-}
 ```
 
 ## 🌐 Accès
