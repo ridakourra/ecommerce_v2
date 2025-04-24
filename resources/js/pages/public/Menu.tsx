@@ -5,12 +5,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import { AddToCart, DestroyCart } from '@/functions/Cart';
 import Layout from '@/layouts/public/Layout';
 import { cn } from '@/lib/utils';
 import { Product } from '@/types';
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import debounce from 'lodash/debounce';
-import { Filter, Heart, Search, ShoppingCart, SlidersHorizontal } from 'lucide-react';
+import { ArrowLeft, Eye, Filter, Heart, Search, ShoppingCart, SlidersHorizontal } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface PaginatedProducts {
@@ -51,28 +52,7 @@ interface Product {
     };
 }
 
-function AddToCart(productId: number): Promise<void> {
-    // Simulate an API call to add the product to the cart
-    return new Promise((resolve) => setTimeout(resolve, 1000));
-}
-
 function ProductCard({ product }: { product: Product }) {
-    const [isLoading, setIsLoading] = useState(false);
-
-    const handleAddToCart = () => {
-        if (product.inCart) return;
-
-        setIsLoading(true);
-        AddToCart(product.id)
-            .then(() => {
-                // Update local state or trigger refetch
-                product.inCart = true;
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
-    };
-
     // Convert strings to numbers and handle null/undefined values
     const price = Number(product.price) || 0;
     const discount = Number(product.discount) || 0;
@@ -109,14 +89,22 @@ function ProductCard({ product }: { product: Product }) {
                         <span className="font-semibold">${discountedPrice.toFixed(2)}</span>
                         {discount > 0 && <span className="text-muted-foreground text-xs line-through">${price.toFixed(2)}</span>}
                     </div>
-                    <Button
-                        size="sm"
-                        onClick={handleAddToCart}
-                    disabled={isLoading || product.inCart}
-                        variant={product.inCart ? 'secondary' : 'default'}
-                    >
-                        {product.inCart ? 'In Cart' : isLoading ? 'Adding...' : <ShoppingCart className="h-4 w-4" />}
-                    </Button>
+                    <div className="flex gap-2">
+                        {product.inCart ? (
+                            <Button size="sm" variant="destructive" onClick={() => DestroyCart(product.id)}>
+                                <ArrowLeft />
+                            </Button>
+                        ) : (
+                            <Button size="sm" onClick={() => AddToCart(product.id)}>
+                                <ShoppingCart />
+                            </Button>
+                        )}
+                        <Button size="sm" variant="link">
+                            <Link href={route('public.products.show', product.id)}>
+                                <Eye />
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
             </CardContent>
         </Card>

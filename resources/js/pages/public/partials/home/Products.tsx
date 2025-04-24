@@ -135,7 +135,7 @@ export default function Products({ products = mockProducts }: ProductsProps) {
                 {/* Add More Products Button */}
                 <div className="mt-12 flex justify-center">
                     <Button variant="outline" size="lg" asChild className="group gap-2">
-                        <Link href={route('products.index')}>
+                        <Link href={route('menu')}>
                             View All Products
                             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </Link>
