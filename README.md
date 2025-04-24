@@ -90,6 +90,5 @@ L'application est accessible sur : http://localhost:8000
 
 - `resources/js` : Composants React
 - `routes/web.php` : Routes front-end
-- `routes/api.php` : Endpoints API
 - `app/Http/Controllers` : Logique serveur
 - `app/Models` : Modèles Eloquent
