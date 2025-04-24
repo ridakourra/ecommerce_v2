@@ -42,6 +42,11 @@ class Product extends Model
         return $this->hasMany(CartItem::class);
     }
 
+    public function cartItemAuth()
+    {
+        return CartItem::where('product_id', $this->id)->where('user_id', Auth::id())->first();
+    }
+
     public function inCart()
     {
         return CartItem::where('product_id', $this->id)->where('user_id', Auth::id())->count();

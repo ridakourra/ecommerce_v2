@@ -20,7 +20,7 @@ export default function HerSection() {
                 </p>
                 <div className="flex justify-center gap-4">
                     <Button size="lg" asChild>
-                        <Link href="/products">Shop Now</Link>
+                        <Link href="/menu">Shop Now</Link>
                     </Button>
                     <Button size="lg" variant="outline" asChild>
                         <Link href="/categories">Browse Categories</Link>

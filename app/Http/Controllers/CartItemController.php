@@ -26,9 +26,9 @@ class CartItemController extends Controller
         return back();
     }
 
-    public function destroy($id)
+    public function destroy($productId)
     {
-        $cartItem = CartItem::findOrFail($id);
+        $cartItem = CartItem::where('product_id', $productId)->where('user_id', Auth::id())->first();
         $cartItem->delete();
 
         return back();
@@ -42,7 +42,6 @@ class CartItemController extends Controller
 
         if ($existingCartItem) {
             $existingCartItem->quantity += $request->quantity;
-            $existingCartItem->price = $existingCartItem->product->price * $existingCartItem->quantity;
             $existingCartItem->save();
         } else {
             $cartItem = CartItem::create([
@@ -52,7 +51,7 @@ class CartItemController extends Controller
                 'price' => 0
             ]);
 
-            $cartItem->price = $cartItem->product->price * $cartItem->quantity;
+            $cartItem->price = $cartItem->product->price;
             $cartItem->save();
         }
 

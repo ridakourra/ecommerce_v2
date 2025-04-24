@@ -2,10 +2,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { AddToCart, DestroyCart, LessCart, PlusCart } from '@/functions/Cart';
 import Layout from '@/layouts/public/Layout';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Heart, Minus, Plus, ShoppingCart, Truck } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowLeft, Heart, Minus, Plus, ShoppingCart, Truck } from 'lucide-react';
 
 interface Product {
     id: number;
@@ -16,6 +16,10 @@ interface Product {
     image: string;
     brand: string;
     inCart: boolean;
+    cart: {
+        id: number;
+        quantity: number;
+    };
     category: {
         id: number;
         name: string;
@@ -28,16 +32,7 @@ interface Props {
 }
 
 export default function Product({ product, relatedProducts }: Props) {
-    const [quantity, setQuantity] = useState(1);
-    const [isLoading, setIsLoading] = useState(false);
-
     const discountedPrice = product.discount > 0 ? product.price - (product.price * product.discount) / 100 : product.price;
-
-    const handleAddToCart = async () => {
-        setIsLoading(true);
-        // Add to cart logic here
-        setTimeout(() => setIsLoading(false), 1000);
-    };
 
     return (
         <Layout title={product.name}>
@@ -71,11 +66,19 @@ export default function Product({ product, relatedProducts }: Props) {
                         <div className="mb-6 flex items-center gap-4">
                             <span className="text-muted-foreground font-medium">Quantity:</span>
                             <div className="flex items-center gap-2">
-                                <Button variant="outline" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => (product.inCart ? LessCart(product.cart.id) : AddToCart(product.id))}
+                                >
                                     <Minus className="h-4 w-4" />
                                 </Button>
-                                <span className="w-12 text-center font-medium">{quantity}</span>
-                                <Button variant="outline" size="icon" onClick={() => setQuantity(quantity + 1)}>
+                                <span className="w-12 text-center font-medium">{product.inCart ? product.cart.quantity : 1}</span>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => (product.inCart ? PlusCart(product.cart.id) : AddToCart(product.id))}
+                                >
                                     <Plus className="h-4 w-4" />
                                 </Button>
                             </div>
@@ -83,18 +86,21 @@ export default function Product({ product, relatedProducts }: Props) {
 
                         {/* Action Buttons */}
                         <div className="mb-6 flex gap-4">
-                            <Button className="flex-1" size="lg" onClick={handleAddToCart} disabled={isLoading || product.inCart}>
-                                {product.inCart ? (
-                                    'In Cart'
-                                ) : isLoading ? (
-                                    'Adding...'
-                                ) : (
-                                    <>
+                            {product.inCart ? (
+                                <>
+                                    <Button variant="destructive" onClick={() => DestroyCart(product.id)} className="w-full" size="lg">
+                                        <ArrowLeft className="mr-2 h-4 w-4" />
+                                        In Cart
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button className="flex-1" size="lg" onClick={() => AddToCart(product.id)}>
                                         <ShoppingCart className="mr-2 h-5 w-5" />
                                         Add to Cart
-                                    </>
-                                )}
-                            </Button>
+                                    </Button>
+                                </>
+                            )}
                             <Button variant="outline" size="lg">
                                 <Heart className="h-5 w-5" />
                             </Button>
@@ -140,7 +146,7 @@ export default function Product({ product, relatedProducts }: Props) {
                                                 <div className="flex items-center justify-between">
                                                     <span className="font-medium">${relatedProduct.price.toFixed(2)}</span>
                                                     <Button size="sm" variant="secondary" asChild>
-                                                        <a href={route('products.show', relatedProduct.id)}>View</a>
+                                                        <a href={route('public.products.show', relatedProduct.id)}>View</a>
                                                     </Button>
                                                 </div>
                                             </div>

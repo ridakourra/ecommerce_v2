@@ -133,6 +133,7 @@ class PublicController extends Controller
                 'image' => $product->image,
                 'brand' => $product->brand,
                 'inCart' => in_array($product->id, $userCartItems),
+                'cart' => CartItem::where('product_id', $product->id)->where('user_id', Auth::id())->first(),
                 'category' => [
                     'id' => $product->category->id,
                     'name' => $product->category->name,

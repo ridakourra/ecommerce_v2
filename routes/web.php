@@ -20,6 +20,8 @@ Route::middleware('auth')->group(function () {
 
     // Cart Items
     Route::post('/cart/add', [CartItemController::class, 'add'])->name('cart.add');
+    // Destory Cart Items
+    Route::delete('/cart/{productId}', [CartItemController::class, 'destroy'])->name('cart.destroy');
     // Cart Plus
     Route::post('/cart/cart-plus/{cartItem}', [CartItemController::class, 'cartPlus'])->name('cart.cartPlus');
     // Cart Items

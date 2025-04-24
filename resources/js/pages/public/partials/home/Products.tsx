@@ -1,10 +1,10 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { AddToCart } from '@/functions/Cart';
+import { AddToCart, DestroyCart } from '@/functions/Cart';
 import { type Product } from '@/types';
 import { Link } from '@inertiajs/react';
-import { ArrowRight, Heart, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Eye, Heart, ShoppingCart } from 'lucide-react';
 
 interface ProductsProps {
     products?: Product[];
@@ -108,19 +108,24 @@ export default function Products({ products = mockProducts }: ProductsProps) {
                                 </div>
                             </CardContent>
 
-                            <CardFooter className="justify-between gap-2">
-                                <Button
-                                    variant={product.inCart ? 'ghost' : 'default'}
-                                    disabled={product.inCart}
-                                    onClick={() => AddToCart(product.id)}
-                                    className="w-full"
-                                    size="sm"
-                                >
-                                    <ShoppingCart className="mr-2 h-4 w-4" />
-                                    {product.inCart ? 'In Cart' : 'Add to Cart'}
-                                </Button>
+                            <CardFooter className="flex items-center justify-between gap-2">
+                                {product.inCart ? (
+                                    <>
+                                        <Button variant="destructive" onClick={() => DestroyCart(product.id)} className="w-full" size="sm">
+                                            <ArrowLeft className="mr-2 h-4 w-4" />
+                                            In Cart
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <Button onClick={() => AddToCart(product.id)} className="w-full" size="sm">
+                                        <ShoppingCart className="mr-2 h-4 w-4" />
+                                        Add to Cart
+                                    </Button>
+                                )}
                                 <Button variant="outline" size="sm" asChild>
-                                    <Link href={route('public.products.show', product.id)}>View Details</Link>
+                                    <Link href={route('public.products.show', product.id)}>
+                                        <Eye />{' '}
+                                    </Link>
                                 </Button>
                             </CardFooter>
                         </Card>

@@ -32,3 +32,14 @@ export function LessCart(cartItem: number): Promise<void> {
         });
     });
 }
+
+
+export function DestroyCart(productId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+        router.delete(route('cart.destroy', productId), {
+            preserveScroll: true,
+            onSuccess: () => resolve(),
+            onError: () => reject(),
+        });
+    });
+}
