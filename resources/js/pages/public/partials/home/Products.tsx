@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { AddToCart } from '@/functions/Cart';
 import { type Product } from '@/types';
 import { Link } from '@inertiajs/react';
 import { ArrowRight, Heart, ShoppingCart } from 'lucide-react';
@@ -51,6 +52,7 @@ const mockProducts = [
 ] as Product[];
 
 export default function Products({ products = mockProducts }: ProductsProps) {
+    console.log(products);
     return (
         <section className="py-16">
             <div className="container">
@@ -107,12 +109,18 @@ export default function Products({ products = mockProducts }: ProductsProps) {
                             </CardContent>
 
                             <CardFooter className="justify-between gap-2">
-                                <Button className="w-full" size="sm">
+                                <Button
+                                    variant={product.inCart ? 'ghost' : 'default'}
+                                    disabled={product.inCart}
+                                    onClick={() => AddToCart(product.id)}
+                                    className="w-full"
+                                    size="sm"
+                                >
                                     <ShoppingCart className="mr-2 h-4 w-4" />
-                                    Add to Cart
+                                    {product.inCart ? 'In Cart' : 'Add to Cart'}
                                 </Button>
                                 <Button variant="outline" size="sm" asChild>
-                                    <Link href={route('products.show', product.id)}>View Details</Link>
+                                    <Link href={route('public.products.show', product.id)}>View Details</Link>
                                 </Button>
                             </CardFooter>
                         </Card>

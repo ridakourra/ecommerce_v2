@@ -5,7 +5,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { LayoutDashboard, LogInIcon, LogOutIcon, ShoppingBag, User, UserPlus } from 'lucide-react';
 
 export default function Header() {
-    const { auth } = usePage().props;
+    const { auth, data } = usePage().props;
 
     const navigation = [
         { name: 'Home', href: '/' },
@@ -43,7 +43,7 @@ export default function Header() {
                                 <Link href={route('cart.index')}>
                                     <ShoppingBag className="h-5 w-5" />
                                     <span className="bg-primary text-primary-foreground absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[10px]">
-                                        0
+                                        {data.countCart}
                                     </span>
                                 </Link>
                             </Button>

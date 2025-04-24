@@ -36,12 +36,44 @@ class CartItemController extends Controller
 
     public function add(Request $request)
     {
-        CartItem::create([
-            'product_id' => $request->product_id,
-            'user_id' => Auth::id(),
-            'quantity' => $request->quantity,
-        ]);
+        $existingCartItem = CartItem::where('product_id', $request->product_id)
+            ->where('user_id', Auth::id())
+            ->first();
 
+        if ($existingCartItem) {
+            $existingCartItem->quantity += $request->quantity;
+            $existingCartItem->price = $existingCartItem->product->price * $existingCartItem->quantity;
+            $existingCartItem->save();
+        } else {
+            $cartItem = CartItem::create([
+                'product_id' => $request->product_id,
+                'user_id' => Auth::id(),
+                'quantity' => $request->quantity,
+                'price' => 0
+            ]);
+
+            $cartItem->price = $cartItem->product->price * $cartItem->quantity;
+            $cartItem->save();
+        }
+
+        return back();
+    }
+
+    public function cartPlus(Request $request, CartItem $cartItem)
+    {
+        if ($cartItem->product->stock > $cartItem->quantity) {
+            $cartItem->quantity += 1;
+            $cartItem->save();
+        }
+        return back();
+    }
+
+    public function cartLess(Request $request, CartItem $cartItem)
+    {
+        if ($cartItem->quantity > 1) {
+            $cartItem->quantity -= 1;
+            $cartItem->save();
+        }
         return back();
     }
 }

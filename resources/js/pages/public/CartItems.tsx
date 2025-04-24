@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { LessCart, PlusCart } from '@/functions/Cart';
 import Layout from '@/layouts/public/Layout';
 import { Head } from '@inertiajs/react';
 import { Minus, Plus, Trash2 } from 'lucide-react';
@@ -64,11 +65,23 @@ export default function CartItems({ cartItems }: Props) {
                                             </div>
                                             <div className="mt-2 flex items-center gap-4">
                                                 <div className="flex items-center gap-2">
-                                                    <Button variant="outline" size="icon" className="h-8 w-8">
+                                                    <Button
+                                                        onClick={() => LessCart(item.id)}
+                                                        disabled={!(item.quantity >= 0)}
+                                                        variant="outline"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                    >
                                                         <Minus className="h-4 w-4" />
                                                     </Button>
                                                     <Input type="number" value={item.quantity} className="h-8 w-16 text-center" min={1} />
-                                                    <Button variant="outline" size="icon" className="h-8 w-8">
+                                                    <Button
+                                                        disabled={!(item.product.stock >= item.quantity)}
+                                                        onClick={() => PlusCart(item.id)}
+                                                        variant="outline"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                    >
                                                         <Plus className="h-4 w-4" />
                                                     </Button>
                                                 </div>

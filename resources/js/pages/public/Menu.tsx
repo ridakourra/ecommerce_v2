@@ -44,19 +44,33 @@ interface Product {
     discount: number;
     image: string;
     brand: string;
+    inCart: boolean;
     category: {
         id: number;
         name: string;
     };
 }
 
+function AddToCart(productId: number): Promise<void> {
+    // Simulate an API call to add the product to the cart
+    return new Promise((resolve) => setTimeout(resolve, 1000));
+}
+
 function ProductCard({ product }: { product: Product }) {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleAddToCart = () => {
+        if (product.inCart) return;
+
         setIsLoading(true);
-        // Add to cart logic
-        setTimeout(() => setIsLoading(false), 1000);
+        AddToCart(product.id)
+            .then(() => {
+                // Update local state or trigger refetch
+                product.inCart = true;
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
     };
 
     // Convert strings to numbers and handle null/undefined values
@@ -95,8 +109,13 @@ function ProductCard({ product }: { product: Product }) {
                         <span className="font-semibold">${discountedPrice.toFixed(2)}</span>
                         {discount > 0 && <span className="text-muted-foreground text-xs line-through">${price.toFixed(2)}</span>}
                     </div>
-                    <Button size="sm" onClick={handleAddToCart} disabled={isLoading}>
-                        {isLoading ? 'Adding...' : <ShoppingCart className="h-4 w-4" />}
+                    <Button
+                        size="sm"
+                        onClick={handleAddToCart}
+                    disabled={isLoading || product.inCart}
+                        variant={product.inCart ? 'secondary' : 'default'}
+                    >
+                        {product.inCart ? 'In Cart' : isLoading ? 'Adding...' : <ShoppingCart className="h-4 w-4" />}
                     </Button>
                 </div>
             </CardContent>

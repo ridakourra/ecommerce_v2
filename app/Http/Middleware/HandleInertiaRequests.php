@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\CartItem;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,8 +52,12 @@ class HandleInertiaRequests extends Middleware
                 'step' => fn() => $request->session()->get('step'),
                 'status' => fn() => $request->session()->get('status'),
                 'data' => fn() => $request->session()->get('data'),
+
             ],
-            'ziggy' => fn(): array => [
+            'data' => [
+                'countCart' => CartItem::where('user_id', Auth::id())->count()
+            ],
+            'ziggy' => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
