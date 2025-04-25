@@ -1,8 +1,9 @@
 import { CartItem } from '@/components/cart/CartItem';
-import { Button } from '@/components/ui/button';
+import { CreateOrderDialog } from '@/components/orders/CreateOrderDialog';
 import { Card } from '@/components/ui/card';
 import Layout from '@/layouts/public/Layout';
 import { Head } from '@inertiajs/react';
+
 interface CartItem {
     item: {
         id: number;
@@ -35,6 +36,12 @@ export default function CartItems({ cartItems }: Props) {
     const shipping = 100;
     const total = subtotal + (subtotal >= 100 ? shipping : 0);
 
+    const cartSummary = {
+        total_price: subtotal,
+        discount: subtotal >= 100 ? shipping : 0,
+        final_price: total,
+    };
+
     return (
         <Layout title="Cart Items">
             <Head title="Shopping Cart" />
@@ -54,6 +61,7 @@ export default function CartItems({ cartItems }: Props) {
 
                     {/* Order Summary */}
                     <div className="lg:col-span-1">
+                        {/* Order Summary Card */}
                         <Card className="p-4">
                             <h2 className="mb-4 text-lg font-semibold">Order Summary</h2>
                             <div className="space-y-2">
@@ -72,7 +80,11 @@ export default function CartItems({ cartItems }: Props) {
                                     </div>
                                 </div>
                             </div>
-                            <Button className="mt-4 w-full">Proceed to Checkout</Button>
+                            {cartItems.length > 0 && (
+                                <div className="mt-4">
+                                    <CreateOrderDialog cartSummary={cartSummary} />
+                                </div>
+                            )}
                         </Card>
                     </div>
                 </div>

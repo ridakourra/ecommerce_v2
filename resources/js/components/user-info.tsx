@@ -5,10 +5,11 @@ import { type User, type UserDetails } from '@/types';
 export function UserInfo({ user, showEmail = false }: { user: User; showEmail?: boolean }) {
     const getInitials = useInitials();
     const details: UserDetails = user.details as UserDetails;
+    console.log(details)
     return (
         <>
             <Avatar className="h-8 w-8 overflow-hidden rounded-full">
-                {details.avatar && <AvatarImage src={`/storage/${details.avatar}`} alt={user.first_name} />}
+                {details?.avatar && <AvatarImage src={`/storage/${details.avatar}`} alt={user.first_name} />}
                 <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
                     {getInitials(user.first_name)}
                 </AvatarFallback>
