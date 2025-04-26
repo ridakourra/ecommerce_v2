@@ -5,11 +5,20 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PasswordController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', [PublicController::class, 'home'])->name('home');
 Route::get('/cart', [CartItemController::class, 'index'])->name('cart.index');
 Route::get('/menu', [PublicController::class, 'menu'])->name('menu');
 Route::get('/products/{product}', [PublicController::class, 'product'])->name('public.products.show');
+
+Route::get('/test', function () {
+    return back()->with('message', 'this is the message test!!');
+});
+Route::get('/test-tsx', function () {
+    return Inertia::render('test');
+});
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('public.profile.edit');

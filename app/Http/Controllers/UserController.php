@@ -43,7 +43,7 @@ class UserController extends Controller
             });
         }
 
-        $users = $query->paginate(5)->withQueryString();
+        $users = $query->with('details')->paginate(5)->withQueryString();
 
         return Inertia::render('users/Index', [
             'users' => $users,

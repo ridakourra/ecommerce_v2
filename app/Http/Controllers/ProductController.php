@@ -21,8 +21,6 @@ class ProductController extends Controller
         $query = Product::query()
             ->with(['category', 'user']);
 
-
-
         // Search by name
         if ($request->filled('search')) {
             // dump('Search');
@@ -217,8 +215,7 @@ class ProductController extends Controller
         if (Auth::user()->role !== 'admin') {
             return abort(403);
         }
-
-
+        
         $product->status = 'approved';
         $product->save();
         return back();

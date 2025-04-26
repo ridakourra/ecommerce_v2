@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('/admin')->middleware(['auth', 'verified', 'staff'])->group(function () {
 
     // Admin pages
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
     Route::middleware('admin')->group(function () {
         // Users
@@ -29,13 +29,13 @@ Route::prefix('/admin')->middleware(['auth', 'verified', 'staff'])->group(functi
         # Delete
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
-        // Get categories
-        Route::get('/categories/children/{category}', [CategoryController::class, 'getCategories'])->name('getCategoriesById');
 
 
         # Approve product
         Route::post('/products/{product}/approve', [ProductController::class, 'approveProduct'])->name('products.update.approved');
     });
+    // Get categories
+    Route::get('/categories/children/{category}', [CategoryController::class, 'getCategories'])->name('getCategoriesById');
 
     // Products
     # Index
@@ -55,4 +55,5 @@ Route::prefix('/admin')->middleware(['auth', 'verified', 'staff'])->group(functi
 
     // Orders
     Route::resource('orders', OrderController::class);
+    Route::put('/orders/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 });

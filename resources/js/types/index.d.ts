@@ -113,3 +113,48 @@ export interface Product {
     brand: Brand;
     
 }
+
+
+interface CartItem {
+    id: number;
+    product: {
+        id: number;
+        name: string;
+        image: string;
+        price: number;
+        discount: number;
+        stock: number;
+    };
+    quantity: number;
+    subtotal: number;
+}
+
+interface CartSummary {
+    subtotal: number;
+    shipping: number;
+    total: number;
+    payment_method: string;
+    shipping_address: string;
+    notes?: string;
+}
+
+
+export interface OrderFormData {
+    payment_method: string;
+    shipping_address: string;
+    notes?: string;
+}
+
+export interface CartItem {
+    id: number;
+    quantity: number;
+    subtotal: number;
+    product: {
+        id: number;
+        name: string;
+        image: string;
+        price: number;
+        stock: number;
+        discount: number;
+    };
+}

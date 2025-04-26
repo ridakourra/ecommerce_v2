@@ -29,7 +29,8 @@ export default function MyBadge({ status, className }: MyBadgeProps) {
         active: {
             variant: "default",
             text: "Active"
-        }
+        },
+        
     }
 
     const { variant, text } = variants[status]

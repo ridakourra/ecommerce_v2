@@ -3,18 +3,20 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { CartSummary, OrderFormData } from '@/types/order';
+import { CartSummary } from '@/types';
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface Props {
     cartSummary: CartSummary;
+    disabled?: boolean;
 }
 
-export function CreateOrderDialog({ cartSummary }: Props) {
+export function CreateOrderDialog({ cartSummary, disabled }: Props) {
     const [open, setOpen] = useState(false);
 
-    const { data, setData, post, processing, errors } = useForm<OrderFormData>({
+    const { data, setData, post, processing, errors, reset } = useForm({
         payment_method: '',
         shipping_address: '',
         notes: '',
@@ -22,15 +24,44 @@ export function CreateOrderDialog({ cartSummary }: Props) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!data.payment_method || !data.shipping_address) {
+            toast.error('Please fill in all required fields');
+            return;
+        }
+
         post(route('orders.store'), {
-            onSuccess: () => setOpen(false),
+            onSuccess: () => {
+                setOpen(false);
+                reset();
+                toast.success('Order placed successfully');
+            },
+            onError: (errors) => {
+                toast.error(Object.values(errors).join('\n'));
+            },
+            preserveScroll: true,
         });
     };
 
+    // Use constants from backend
+    const paymentMethods = [
+        { value: 'cash', label: 'Cash on Delivery' },
+        { value: 'card', label: 'Credit Card' },
+        { value: 'paypal', label: 'PayPal' },
+    ];
+
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open}
+            onOpenChange={(isOpen) => {
+                setOpen(isOpen);
+                if (!isOpen) reset();
+            }}
+        >
             <DialogTrigger asChild>
-                <Button className="w-full">Proceed to Checkout</Button>
+                <Button className="w-full" disabled={disabled}>
+                    Proceed to Checkout
+                </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
@@ -47,9 +78,11 @@ export function CreateOrderDialog({ cartSummary }: Props) {
                                 <SelectValue placeholder="Select payment method" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="cash">Cash on Delivery</SelectItem>
-                                <SelectItem value="card">Credit Card</SelectItem>
-                                <SelectItem value="paypal">PayPal</SelectItem>
+                                {paymentMethods.map((method) => (
+                                    <SelectItem key={method.value} value={method.value}>
+                                        {method.label}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                         {errors.payment_method && <p className="text-destructive text-sm">{errors.payment_method}</p>}
@@ -78,7 +111,6 @@ export function CreateOrderDialog({ cartSummary }: Props) {
                             placeholder="Any special instructions for your order"
                             rows={2}
                         />
-                        {errors.notes && <p className="text-destructive text-sm">{errors.notes}</p>}
                     </div>
 
                     {/* Order Summary */}
@@ -87,25 +119,44 @@ export function CreateOrderDialog({ cartSummary }: Props) {
                         <div className="space-y-1 text-sm">
                             <div className="flex justify-between">
                                 <span>Subtotal</span>
-                                <span>${cartSummary.total_price.toFixed(2)}</span>
+                                <span>${cartSummary.subtotal.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span>Discount</span>
-                                <span>-${cartSummary.discount.toFixed(2)}</span>
+                                <span>Shipping</span>
+                                {cartSummary.shipping === 0 ? (
+                                    <span className="text-green-600">Free</span>
+                                ) : (
+                                    <span>${cartSummary.shipping.toFixed(2)}</span>
+                                )}
                             </div>
                             <div className="flex justify-between border-t pt-1 font-medium">
                                 <span>Total</span>
-                                <span>${cartSummary.final_price.toFixed(2)}</span>
+                                <span>${cartSummary.total.toFixed(2)}</span>
                             </div>
                         </div>
                     </div>
 
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                    <DialogFooter className="gap-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                                setOpen(false);
+                                reset();
+                            }}
+                            disabled={processing}
+                        >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={processing}>
-                            {processing ? 'Creating...' : 'Place Order'}
+                        <Button type="submit" disabled={processing || !data.payment_method || !data.shipping_address}>
+                            {processing ? (
+                                <>
+                                    {/* <Loader2 className="mr-2 h-4 w-4 animate-spin" /> */}
+                                    Processing...
+                                </>
+                            ) : (
+                                'Place Order'
+                            )}
                         </Button>
                     </DialogFooter>
                 </form>

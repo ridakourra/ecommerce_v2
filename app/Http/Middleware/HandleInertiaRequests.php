@@ -49,10 +49,8 @@ class HandleInertiaRequests extends Middleware
                 'user' => Auth::user() ? $request->user()->load('details') : $request->user(),
             ],
             'flash' => [
-                'step' => fn() => $request->session()->get('step'),
                 'status' => fn() => $request->session()->get('status'),
                 'data' => fn() => $request->session()->get('data'),
-
             ],
             'data' => [
                 'countCart' => CartItem::where('user_id', Auth::id())->count()

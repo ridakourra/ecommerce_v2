@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { Grid, Package, ShoppingCart, Users2 } from 'lucide-react';
+import { BarChart3, DollarSign, Package, ShoppingCart, TrendingUp } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -13,49 +13,63 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface DashboardCard {
     title: string;
-    value: number;
+    value: number | string;
     icon: React.ReactNode;
     description?: string;
 }
 
 interface DashboardProps {
-    categoriesCount: number;
     productsCount: number;
     ordersCount: number;
-    usersCount: number;
+    totalRevenue: number;
+    totalSales: number;
+    recentOrders: Array<{
+        id: number;
+        customer: string;
+        amount: number;
+        status: string;
+        date: string;
+    }>;
+    topProducts: Array<{
+        id: number;
+        name: string;
+        price: number;
+        sold: number;
+        stock: number;
+    }>;
 }
 
-export default function Dashboard({ categoriesCount, productsCount, ordersCount, usersCount }: DashboardProps) {
+export default function DashboardSeller({ productsCount, ordersCount, totalRevenue, totalSales }: DashboardProps) {
     const cards: DashboardCard[] = [
         {
-            title: 'Categories',
-            value: categoriesCount,
-            icon: <Grid className="text-muted-foreground h-8 w-8" />,
-            description: 'Total categories in system',
+            title: 'Total Revenue',
+            value: `$${totalRevenue.toFixed(2)}`,
+            icon: <DollarSign className="text-muted-foreground h-8 w-8" />,
+            description: 'Total earnings from sales',
         },
         {
             title: 'Products',
             value: productsCount,
             icon: <Package className="text-muted-foreground h-8 w-8" />,
-            description: 'Total products available',
+            description: 'Total products listed',
         },
         {
             title: 'Orders',
             value: ordersCount,
             icon: <ShoppingCart className="text-muted-foreground h-8 w-8" />,
-            description: 'Total orders processed',
+            description: 'Total orders received',
         },
         {
-            title: 'Users',
-            value: usersCount,
-            icon: <Users2 className="text-muted-foreground h-8 w-8" />,
-            description: 'Registered users',
+            title: 'Total Sales',
+            value: totalSales,
+            icon: <TrendingUp className="text-muted-foreground h-8 w-8" />,
+            description: 'Items sold',
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
+            <Head title="Seller Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-6 p-6">
                 {/* Stats Cards */}
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -73,37 +87,48 @@ export default function Dashboard({ categoriesCount, productsCount, ordersCount,
                     ))}
                 </div>
 
-                {/* Charts Section */}
+                {/* Sales Chart & Recent Orders */}
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
                     <Card className="col-span-4">
                         <CardHeader>
-                            <CardTitle>Overview</CardTitle>
+                            <CardTitle>Sales Overview</CardTitle>
                         </CardHeader>
-                        <CardContent className="pl-2">{/* Add your chart component here */}</CardContent>
+                        <CardContent>
+                            <div className="text-muted-foreground flex h-[300px] items-center justify-center">
+                                <BarChart3 className="h-8 w-8" />
+                                <span className="ml-2">Sales chart coming soon</span>
+                            </div>
+                        </CardContent>
                     </Card>
 
                     <Card className="col-span-3">
                         <CardHeader>
-                            <CardTitle>Recent Sales</CardTitle>
+                            <CardTitle>Recent Orders</CardTitle>
                         </CardHeader>
-                        <CardContent>{/* Add your recent sales list here */}</CardContent>
+                        <CardContent>
+                            <div className="text-muted-foreground py-4 text-center">Recent orders will appear here</div>
+                        </CardContent>
                     </Card>
                 </div>
 
-                {/* Additional Sections */}
+                {/* Product Stats */}
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
                     <Card className="col-span-4">
                         <CardHeader>
-                            <CardTitle>Popular Products</CardTitle>
+                            <CardTitle>Top Selling Products</CardTitle>
                         </CardHeader>
-                        <CardContent>{/* Add your popular products list here */}</CardContent>
+                        <CardContent>
+                            <div className="text-muted-foreground py-4 text-center">Top selling products will appear here</div>
+                        </CardContent>
                     </Card>
 
                     <Card className="col-span-3">
                         <CardHeader>
-                            <CardTitle>Latest Users</CardTitle>
+                            <CardTitle>Low Stock Alert</CardTitle>
                         </CardHeader>
-                        <CardContent>{/* Add your latest users list here */}</CardContent>
+                        <CardContent>
+                            <div className="text-muted-foreground py-4 text-center">Low stock products will appear here</div>
+                        </CardContent>
                     </Card>
                 </div>
             </div>

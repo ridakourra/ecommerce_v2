@@ -113,6 +113,21 @@ export default function Show({ product }: Props) {
                         </div>
 
                         <div>
+                            <h3 className="font-medium">Stock</h3>
+                            <p className="mt-2 text-sm text-gray-600">{product.stock || 'No Stock provided'}</p>
+                        </div>
+
+                        <div>
+                            <h3 className="font-medium">Price</h3>
+                            <p className="mt-2 text-sm text-gray-600">{product.price + ' $' || 'No price provided'}</p>
+                        </div>
+
+                        <div>
+                            <h3 className="font-medium">Discount</h3>
+                            <p className="mt-2 text-sm text-gray-600">{product.discount ? product.discount + ' %' : '0'}</p>
+                        </div>
+
+                        <div>
                             <h3 className="font-medium">Created By</h3>
                             <div className="mt-2 flex items-center gap-3">
                                 <Avatar>

@@ -11,7 +11,7 @@ class CartItemController extends Controller
 {
     public function index()
     {
-        $cartItems = CartItem::with('product')->get();
+        $cartItems = CartItem::where('user_id', Auth::id())->with('product')->get();
         return Inertia::render('public/CartItems', [
             'cartItems' => $cartItems,
         ]);

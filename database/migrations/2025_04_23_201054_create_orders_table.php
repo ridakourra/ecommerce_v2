@@ -17,11 +17,12 @@ return new class extends Migration
 
             $table->string('status')->default('pending');
             $table->string('payment_method')->nullable();
-            $table->string('payment_status')->default('unpaid');
+            $table->string('payment_status')->default('pending');
 
-            $table->decimal('total_price', 10, 2);
+            $table->decimal('subtotal', 10, 2);
+            $table->decimal('shipping_cost', 10, 2)->default(0);
             $table->decimal('discount', 10, 2)->default(0);
-            $table->decimal('final_price', 10, 2);
+            $table->decimal('total_price', 10, 2);
 
             $table->text('shipping_address');
             $table->text('notes')->nullable();
