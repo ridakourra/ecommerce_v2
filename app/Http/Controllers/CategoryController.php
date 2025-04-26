@@ -50,6 +50,7 @@ class CategoryController extends Controller
             $vars['flag'] = $req->file('flag')->store('flags', 'public');
         }
         Category::create($vars);
+        return back();
     }
 
 

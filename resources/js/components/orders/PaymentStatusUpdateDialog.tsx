@@ -6,25 +6,24 @@ import { useState } from "react";
 
 interface Props {
     orderId: number;
-    currentStatus: string;
+    currentPaymentStatus: string;
 }
 
-const statusOptions = [
+const paymentStatusOptions = [
     { value: 'pending', label: 'Pending' },
-    { value: 'processing', label: 'Processing' },
-    { value: 'shipped', label: 'Shipped' },
-    { value: 'delivered', label: 'Delivered' },
-    { value: 'cancelled', label: 'Cancelled' },
+    { value: 'paid', label: 'Paid' },
+    { value: 'failed', label: 'Failed' },
+    { value: 'refunded', label: 'Refunded' },
 ];
 
-export function StatusUpdateDialog({ orderId, currentStatus }: Props) {
+export function PaymentStatusUpdateDialog({ orderId, currentPaymentStatus }: Props) {
     const [open, setOpen] = useState(false);
-    const [status, setStatus] = useState(currentStatus);
+    const [paymentStatus, setPaymentStatus] = useState(currentPaymentStatus);
 
     const handleUpdate = () => {
-        router.put(route('orders.updateStatus'), { 
+        router.put(route('orders.updatePaymentStatus'), { 
             order_id: orderId,
-            status: status 
+            payment_status: paymentStatus 
         }, {
             preserveScroll: true,
             onSuccess: () => setOpen(false),
@@ -34,22 +33,22 @@ export function StatusUpdateDialog({ orderId, currentStatus }: Props) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline">Update Status</Button>
+                <Button variant="outline">Update Payment Status</Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Update Order Status</DialogTitle>
+                    <DialogTitle>Update Payment Status</DialogTitle>
                     <DialogDescription>
-                        Change the status for order #{orderId}
+                        Change the payment status for order #{orderId}
                     </DialogDescription>
                 </DialogHeader>
 
-                <Select value={status} onValueChange={(value) => setStatus(value)}>
+                <Select value={paymentStatus} onValueChange={setPaymentStatus}>
                     <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
+                        <SelectValue placeholder="Select payment status" />
                     </SelectTrigger>
                     <SelectContent>
-                        {statusOptions.map((option) => (
+                        {paymentStatusOptions.map((option) => (
                             <SelectItem key={option.value} value={option.value}>
                                 {option.label}
                             </SelectItem>
@@ -62,7 +61,7 @@ export function StatusUpdateDialog({ orderId, currentStatus }: Props) {
                         Cancel
                     </Button>
                     <Button onClick={handleUpdate}>
-                        Update Status
+                        Update Payment Status
                     </Button>
                 </DialogFooter>
             </DialogContent>

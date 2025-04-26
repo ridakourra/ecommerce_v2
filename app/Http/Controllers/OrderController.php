@@ -87,32 +87,74 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        // منع الوصول إلا إذا كان Admin أو صاحب المنتج (seller)
+        // If user is admin, show all order details
+        if ($user->isAdmin()) {
+            $order->load(['items.product.user', 'user']);
+            
+            return inertia('orders/Show', [
+                'order' => $order,
+            ]);
+        }
+        
+        // If user is seller, only show their products in the order
         if ($user->isSeller()) {
             $productIds = $user->products()->pluck('id');
 
+            // Check if seller has any products in this order
             $related = $order->items()->whereIn('product_id', $productIds)->exists();
-            if (! $related) {
+            if (!$related) {
                 abort(403);
             }
+
+            // Load the order with only the seller's products
+            $order->load(['user']);
+            
+            // Filter order items to only include seller's products
+            $sellerItems = $order->items()->whereIn('product_id', $productIds)->with('product.user')->get();
+            
+            // Calculate seller's subtotal
+            $sellerSubtotal = $sellerItems->sum('subtotal');
+            
+            return inertia('orders/Show', [
+                'order' => $order,
+                'sellerItems' => $sellerItems,
+                'sellerSubtotal' => $sellerSubtotal,
+                'isSellerView' => true
+            ]);
         }
 
-        $order->load(['items.product', 'user']);
-
+        // For other users (like customers viewing their own orders)
+        $order->load(['items.product.user', 'user']);
+        
         return inertia('orders/Show', [
             'order' => $order,
         ]);
     }
 
-    public function updateStatus(Request $request, Order $order)
+    public function updateStatus(Request $request)
     {
         $validated = $request->validate([
+            'order_id' => ['required', 'exists:orders,id'],
             'status' => ['required', 'string', 'in:pending,processing,shipped,delivered,cancelled'],
         ]);
-
-        $order->update($validated);
-
+    
+        $order = Order::findOrFail($validated['order_id']);
+        $order->update(['status' => $validated['status']]);
+    
         return back()->with('success', 'Order status updated successfully');
+    }
+
+    public function updatePaymentStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'order_id' => ['required', 'exists:orders,id'],
+            'payment_status' => ['required', 'string', 'in:pending,paid,failed,refunded'],
+        ]);
+
+        $order = Order::findOrFail($validated['order_id']);
+        $order->update(['payment_status' => $validated['payment_status']]);
+
+        return back()->with('success', 'Payment status updated successfully');
     }
 
     public function store(Request $request)
@@ -147,7 +189,7 @@ class OrderController extends Controller
                 'user_id' => Auth::id(),
                 'status' => 'pending',
                 'payment_method' => $validated['payment_method'],
-                'payment_status' => 'pending',
+                'payment_status' => $validated['payment_method'] === 'cash' ? 'pending' : 'paid',
                 'shipping_address' => $validated['shipping_address'],
                 'notes' => $validated['notes'],
                 'total_price' => $total,
@@ -177,5 +219,23 @@ class OrderController extends Controller
                 ->with('success', 'Order placed successfully');
         });
     }
-    // يمكن إضافة store/update/delete حسب الحاجة
+    
+
+    public function destroy(Order $order)
+    {
+        $order->delete();
+        return back()->with('success', 'Order deleted successfully');
+    }
+    public function archive(Request $request)
+    {
+        $validated = $request->validate([
+            'order_id' => ['required', 'exists:orders,id'],
+            'archived' => ['required','boolean'],   
+        ]);
+        $order = Order::findOrFail($validated['order_id']);
+        $order->update(['archived' => $validated['archived']]);
+        return back()->with('success', 'Order archived successfully');
+    }
+
+    
 }

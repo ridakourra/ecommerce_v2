@@ -54,6 +54,7 @@ Route::prefix('/admin')->middleware(['auth', 'verified', 'staff'])->group(functi
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
     // Orders
-    Route::resource('orders', OrderController::class);
+    Route::resource('orders', OrderController::class)->only(['index', 'show', 'destroy']);
     Route::put('/orders/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::put('/orders/update-payment-status', [OrderController::class, 'updatePaymentStatus'])->name('orders.updatePaymentStatus');
 });

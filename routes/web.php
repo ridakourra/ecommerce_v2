@@ -3,6 +3,7 @@
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PasswordController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -26,6 +27,9 @@ Route::middleware('auth')->group(function () {
     Route::post('profile/password', [ProfileController::class, 'updatePassword'])->name('public.profile.password.update');
     Route::post('profile/destroy', [ProfileController::class, 'destroy'])->name('public.profile.destroy');
 
+
+    // Create Order
+    Route::post('/orders/store', [OrderController::class, 'store'])->name('orders.storeAuth');
 
     // Cart Items
     Route::post('/cart/add', [CartItemController::class, 'add'])->name('cart.add');

@@ -202,7 +202,7 @@ class ProductController extends Controller
             Storage::disk('public')->delete($product->image);
         }
         $product->delete();
-        return to_route('products.index');
+        return back();
     }
 
 

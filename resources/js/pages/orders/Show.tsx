@@ -10,10 +10,14 @@ import { BreadcrumbItem, Order } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { Archive, ArrowLeft, Calendar, CreditCard, Package, Trash, Truck, User } from 'lucide-react';
 import { StatusUpdateDialog } from '@/components/orders/StatusUpdateDialog';
+import { PaymentStatusUpdateDialog } from '@/components/orders/PaymentStatusUpdateDialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface Props {
     order: Order;
+    sellerItems?: any[];
+    sellerSubtotal?: number;
+    isSellerView?: boolean;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -21,7 +25,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Order Details', href: '#' },
 ];
 
-export default function Show({ order }: Props) {
+export default function Show({ order, sellerItems, sellerSubtotal, isSellerView = false }: Props) {
     const handleDelete = () => {
         router.delete(route('orders.destroy', order.id));
     };
@@ -36,6 +40,16 @@ export default function Show({ order }: Props) {
         }[status] || 'bg-gray-100 text-gray-800';
     };
 
+    // Format currency helper function
+    const formatCurrency = (amount: number) => {
+        return Number(amount).toFixed(2);
+    };
+
+    // Use sellerItems if in seller view, otherwise use all order items
+    const displayItems = isSellerView ? sellerItems : order.items;
+    // Use sellerSubtotal if in seller view, otherwise use order total
+    const displaySubtotal = isSellerView ? sellerSubtotal : order.total_price;
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Order #${order.id}`} />
@@ -48,24 +62,35 @@ export default function Show({ order }: Props) {
                         <p className="text-muted-foreground mt-1">
                             Placed on {new Date(order.created_at).toLocaleDateString()}
                         </p>
+                        {isSellerView && (
+                            <Badge className="mt-2 bg-blue-100 text-blue-800">
+                                Seller View - Showing only your products
+                            </Badge>
+                        )}
                     </div>
                     <div className="flex gap-2">
                         <Button variant="outline" onClick={() => router.get(route('orders.index'))}>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Orders
                         </Button>
-                        <StatusUpdateDialog orderId={order.id} currentStatus={order.status} />
-                        <DialogDelete
-                            title="Delete Order"
-                            description={`Are you sure you want to delete order #${order.id}?`}
-                            trigger={
-                                <Button variant="destructive">
-                                    <Trash className="mr-2 h-4 w-4" />
-                                    Delete Order
-                                </Button>
-                            }
-                            onDelete={handleDelete}
-                        />
+                        
+                        {
+                            !isSellerView && <>
+                                <StatusUpdateDialog orderId={order.id} currentStatus={order.status} />
+                                <PaymentStatusUpdateDialog orderId={order.id} currentPaymentStatus={order.payment_status} />
+                                <DialogDelete
+                                    title="Delete Order"
+                                    description={`Are you sure you want to delete order #${order.id}?`}
+                                    trigger={
+                                        <Button variant="destructive">
+                                            <Trash className="mr-2 h-4 w-4" />
+                                            Delete Order
+                                        </Button>
+                                    }
+                                    onDelete={handleDelete}
+                                />
+                            </>
+                        }
                     </div>
                 </div>
 
@@ -144,7 +169,7 @@ export default function Show({ order }: Props) {
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-base font-semibold">
-                                    Order Summary
+                                    {isSellerView ? "Seller's Products Summary" : "Order Summary"}
                                 </CardTitle>
                                 <Truck className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
@@ -152,19 +177,24 @@ export default function Show({ order }: Props) {
                                 <div className="space-y-4">
                                     <div className="flex justify-between">
                                         <span className="text-muted-foreground">Subtotal</span>
-                                        <span>${order.total_price}</span>
+                                        <span>${formatCurrency(displaySubtotal)}</span>
                                     </div>
-                                    {order.discount > 0 && (
+                                    {!isSellerView && order.discount > 0 && (
                                         <div className="flex justify-between text-green-600">
                                             <span>Discount</span>
-                                            <span>-${order.discount}</span>
+                                            <span>-${formatCurrency(order.discount)}</span>
                                         </div>
                                     )}
                                     <Separator />
                                     <div className="flex justify-between font-medium">
                                         <span>Total</span>
-                                        <span>${order.final_price}</span>
+                                        <span>${formatCurrency(isSellerView ? displaySubtotal : order.final_price)}</span>
                                     </div>
+                                    {isSellerView && (
+                                        <div className="mt-2 text-sm text-muted-foreground">
+                                            <p>* This summary shows only your products in this order</p>
+                                        </div>
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>
@@ -192,7 +222,9 @@ export default function Show({ order }: Props) {
                 {/* Order Items */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Order Items</CardTitle>
+                        <CardTitle>
+                            {isSellerView ? "Your Products in This Order" : "Order Items"}
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="rounded-md border">
@@ -201,6 +233,7 @@ export default function Show({ order }: Props) {
                                     <tr>
                                         {[
                                             'Product',
+                                            'Seller',
                                             'Quantity',
                                             'Price',
                                             'Discount',
@@ -213,7 +246,7 @@ export default function Show({ order }: Props) {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y">
-                                    {order.items.map((item) => (
+                                    {displayItems.map((item) => (
                                         <tr key={item.id} className="px-4 py-2 text-sm">
                                             <td className="px-4 py-2">
                                                 <div className="flex items-center gap-3">
@@ -232,50 +265,59 @@ export default function Show({ order }: Props) {
                                                     </div>
                                                 </div>
                                             </td>
+                                            <td className="px-4 py-2 text-center">
+                                                {item.product.user ? (
+                                                    <div className="flex flex-col items-center justify-center">
+                                                        <span className="text-xs">{item.product.user.first_name} {item.product.user.last_name}</span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-muted-foreground">Unknown</span>
+                                                )}
+                                            </td>
                                             <td className="px-4 py-2 text-center">{item.quantity}</td>
                                             <td className="px-4 py-2 text-center">
-                                                ${Number(item.price).toFixed(2)}
+                                                ${formatCurrency(Number(item.price))}
                                             </td>
                                             <td className="px-4 py-2 text-center">
-                                                {item.discount > 0 ? (
+                                                {item.product.discount > 0 ? (
                                                     <Badge variant="success" className="bg-green-100 text-green-800">
-                                                        -{item.discount}%
+                                                        -{item.product.discount}%
                                                     </Badge>
                                                 ) : (
                                                     <span className="text-muted-foreground">No discount</span>
                                                 )}
                                             </td>
                                             <td className="px-4 py-2 text-center font-medium">
-                                                ${(Number(item.price) * (1 - item.discount / 100) * item.quantity).toFixed(2)}
+                                                ${formatCurrency((Number(item.price) * (1 - item.product.discount / 100) * item.quantity))}
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                                 <tfoot className="border-t">
                                     <tr>
-                                        <td colSpan={4} className="px-4 py-2 text-right font-medium">
+                                        <td colSpan={5} className="px-4 py-2 text-right font-medium">
                                             Subtotal
                                         </td>
                                         <td className="px-4 py-2 text-center font-medium">
-                                            ${order.total_price}
+                                            ${formatCurrency(displaySubtotal)}
                                         </td>
                                     </tr>
-                                    {order.discount > 0 && (
+                                    {!isSellerView && order.discount > 0 && (
                                         <tr>
-                                            <td colSpan={4} className="px-4 py-2 text-right text-green-600">
+                                            <td colSpan={5} className="px-4 py-2 text-right text-green-600">
                                                 Discount
                                             </td>
                                             <td className="px-4 py-2 text-center text-green-600">
-                                                -${order.discount}
+                                                -${formatCurrency(order.discount)}
                                             </td>
                                         </tr>
                                     )}
                                     <tr>
-                                        <td colSpan={4} className="px-4 py-2 text-right font-bold">
+                                        <td colSpan={5} className="px-4 py-2 text-right font-bold">
                                             Total
                                         </td>
                                         <td className="px-4 py-2 text-center font-bold">
-                                            ${order.final_price}
+                                            ${formatCurrency(isSellerView ? displaySubtotal : order.final_price)}
                                         </td>
                                     </tr>
                                 </tfoot>

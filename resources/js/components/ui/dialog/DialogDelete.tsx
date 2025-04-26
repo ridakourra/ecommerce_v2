@@ -39,7 +39,7 @@ export default function DialogDelete({
                             variant="destructive" 
                             onClick={() => {
                                 onDelete();
-                                document.querySelector('[role="dialog"]')?.querySelector('button[aria-label="Close"]')?.click();
+                                document.querySelector('[role="dialog"]')?.querySelector('button[aria-label="Cancel"]')?.click();
                             }}
                         >
                             Delete

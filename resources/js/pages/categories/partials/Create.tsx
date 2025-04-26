@@ -21,7 +21,8 @@ export default function Create() {
         ziggy: { location },
     } = usePage<{ ziggy: { location: string } }>().props;
 
-    const parent_id = location.split('/')[4] || null;
+    const parent_id = location.split('/')[5] || null;
+    console.log(`Parent Id: ${parent_id}`)
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         description: '',

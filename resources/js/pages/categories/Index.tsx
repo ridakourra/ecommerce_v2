@@ -26,7 +26,7 @@ export default function Index({ categories, index }: { categories: Category[]; i
     const getBreadcrumbs = (index: number, categories: Category[]): BreadcrumbItem[] => {
         const baseBreadcrumb = {
             title: 'Categories',
-            href: '/categories',
+            href: '/admin/categories',
         };
 
         const breadcrumbLevels = {
@@ -35,18 +35,18 @@ export default function Index({ categories, index }: { categories: Category[]; i
                 baseBreadcrumb,
                 {
                     title: categories[0]?.parent?.name || 'Category',
-                    href: `/categories/${categories[0]?.parent?.id}`,
+                    href: `/admin/categories/${categories[0]?.parent?.id}`,
                 },
             ],
             3: [
                 baseBreadcrumb,
                 {
                     title: categories[0]?.parent?.parent?.name || 'Category',
-                    href: `/categories/${categories[0]?.parent?.parent?.id}`,
+                    href: `/admin/categories/${categories[0]?.parent?.parent?.id}`,
                 },
                 {
                     title: categories[0]?.parent?.name || 'Category',
-                    href: `/categories/${categories[0]?.parent?.parent?.id}/${categories[0]?.parent?.id}`,
+                    href: `/admin/categories/${categories[0]?.parent?.parent?.id}/${categories[0]?.parent?.id}`,
                 },
             ],
         };

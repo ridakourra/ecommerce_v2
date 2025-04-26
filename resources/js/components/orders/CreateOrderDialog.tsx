@@ -30,7 +30,7 @@ export function CreateOrderDialog({ cartSummary, disabled }: Props) {
             return;
         }
 
-        post(route('orders.store'), {
+        post(route('orders.storeAuth'), {
             onSuccess: () => {
                 setOpen(false);
                 reset();
