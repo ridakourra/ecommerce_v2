@@ -9,7 +9,14 @@ class ProfileController extends Controller
 {
     public function edit()
     {
-        return Inertia::render('public/Profile');
+
+        $user = auth()->user();
+        $orders = $user->orders()
+            ->with(['items.product'])
+            ->latest()
+            ->get();
+        
+        return Inertia::render('public/Profile', ['orders' => $orders]);
     }
 
     public function update(Request $request)

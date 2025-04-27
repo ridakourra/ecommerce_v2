@@ -16,15 +16,13 @@ class CategoryController extends Controller
 
         if ($category) {
             // dd($category);
-            if ($category->parent_id) {
-                if ($category->children->count() > 0) {
-                    // Level 3
-                    $categories = Category::where('parent_id', $category->id)->with(['parent.parent'])->get();
-                    $index = 3;
-                }
+            if ($category->parent_id !== null && $category->parent->parent_id === null) {
+                // Level 3
+                $categories = Category::where('parent_id', $category->id)->with(['parent.parent'])->get();
+                $index = 3;
             } else {
                 // Level 2
-                $categories = Category::where('parent_id', $category->id)->with(['parent'])->get();
+                $categories = Category::where('parent_id', $category->id)->with(['parent.parent'])->get();
                 $index = 2;
             }
         }

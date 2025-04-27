@@ -74,11 +74,11 @@ export default function Products({ products = mockProducts }: ProductsProps) {
                                 {/* <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100" /> */}
 
                                 {/* Quick Actions */}
-                                <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+                                {/* <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 transition-opacity group-hover:opacity-100">
                                     <Button size="icon" variant="secondary">
                                         <Heart className="h-4 w-4" />
                                     </Button>
-                                </div>
+                                </div> */}
 
                                 {/* Discount Badge */}
                                 {product.discount > 0 && <Badge className="absolute top-4 left-4 bg-red-500">-{product.discount}%</Badge>}

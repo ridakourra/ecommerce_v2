@@ -67,11 +67,11 @@ function ProductCard({ product }: { product: Product }) {
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100" />
-                <div className="absolute top-2 right-2">
+                {/* <div className="absolute top-2 right-2">
                     <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full">
                         <Heart className="h-4 w-4" />
                     </Button>
-                </div>
+                </div> */}
                 {product.discount > 0 && <Badge className="absolute top-2 left-2 bg-red-500">-{product.discount}%</Badge>}
             </div>
             <CardContent className="p-3">

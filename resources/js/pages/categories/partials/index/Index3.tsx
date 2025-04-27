@@ -16,20 +16,37 @@ export default function Index3({ categories }: { categories: Category[] }) {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <p>All Categories</p>
+                <p className="text-lg font-medium">All Categories</p>
                 <Create />
             </div>
-
-            <div className="space-y-3">
-                {categories.map((category) => (
-                    <div
-                        key={category.id}
-                        className="flex items-center justify-between rounded-sm p-2 shadow-sm ring-1 shadow-gray-800 ring-gray-300 hover:bg-[var(--sidebar)] dark:ring-gray-700"
-                    >
-                        <div>{category.name}</div>
-                        <ActionsTableCategory category={category} />
-                    </div>
-                ))}
+            <div className="rounded-md border shadow-sm overflow-hidden">
+                <table className="w-full">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Name</th>
+                            <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y bg-white">
+                        {categories.map((category) => (
+                            <tr key={category.id} className="hover:bg-gray-50">
+                                <td className="px-4 py-3 text-sm font-medium">
+                                    {category.name}
+                                </td>
+                                <td className="px-4 py-3 text-sm flex justify-end">
+                                    <ActionsTableCategory category={category} />
+                                </td>
+                            </tr>
+                        ))}
+                        {categories.length === 0 && (
+                            <tr>
+                                <td colSpan={2} className="px-4 py-4 text-center text-sm text-gray-500">
+                                    No categories found
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
