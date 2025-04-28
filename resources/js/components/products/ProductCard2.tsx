@@ -7,9 +7,9 @@ import { Button } from '../ui/button';
 
 export default function ProductCard2({ product }) {
     return (
-        <div className="flex max-h-[300px] w-full flex-col overflow-hidden rounded-2xl border bg-white shadow-md transition hover:scale-[1.02] hover:shadow-lg md:max-h-[400px]">
+        <div className="flex flex-col h-full overflow-hidden rounded-2xl border bg-white shadow-md transition hover:scale-[1.02] hover:shadow-lg">
             {/* image */}
-            <div className="relative h-48 w-full overflow-hidden rounded-b-none">
+            <div className="relative h-35 w-full overflow-hidden rounded-b-none">
                 <img src={`/storage/${product.image}`} alt={product.name} className="h-full w-full object-cover" />
                 {/* discount badge */}
                 {product.discount > 0 && (
@@ -25,8 +25,8 @@ export default function ProductCard2({ product }) {
                     {product.brand}
                 </Badge>
 
-                <Link href={route('public.products.show', { product: product.id })}>
-                    <h3 className="line-clamp-2 text-base font-semibold text-gray-800">{product.name}</h3>
+                <Link title={product.name} href={route('public.products.show', { product: product.id })}>
+                    <h3 className="line-clamp-1 text-base font-semibold text-gray-800">{product.name}</h3>
                 </Link>
 
                 {/* price section */}
