@@ -7,7 +7,7 @@ import { Button } from '../ui/button';
 
 export default function ProductCard2({ product }) {
     return (
-        <div className="flex w-full flex-col overflow-hidden rounded-2xl border bg-white shadow-md transition hover:scale-[1.02] hover:shadow-lg">
+        <div className="flex max-h-[300px] w-full flex-col overflow-hidden rounded-2xl border bg-white shadow-md transition hover:scale-[1.02] hover:shadow-lg md:max-h-[400px]">
             {/* image */}
             <div className="relative h-48 w-full overflow-hidden rounded-b-none">
                 <img src={`/storage/${product.image}`} alt={product.name} className="h-full w-full object-cover" />
@@ -33,7 +33,9 @@ export default function ProductCard2({ product }) {
                 <div className="flex items-center gap-2">
                     {product.discount ? (
                         <>
-                            <p className="text-lg font-bold text-green-600">{Number(calculateFinalPrice(product.price, product.discount).toFixed(2))}$</p>
+                            <p className="text-lg font-bold text-green-600">
+                                {Number(calculateFinalPrice(product.price, product.discount).toFixed(2))}$
+                            </p>
                             <p className="text-sm text-gray-400 line-through">{Number(product.price).toFixed(2)}$</p>
                         </>
                     ) : (

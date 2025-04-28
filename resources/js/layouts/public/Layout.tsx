@@ -5,7 +5,7 @@ import Header from './Header';
 export default function Layout({ title, children }) {
     return (
         <>
-            <div className="bg-background min-h-screen">
+            <div className="bg-background min-h-screen overflow-hidden">
                 <Head title={title} />
                 <div className="container mx-auto">
                     <Header />

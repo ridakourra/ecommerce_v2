@@ -1,6 +1,7 @@
 import { NavigationMenu, NavigationMenuList } from '@/components/ui/navigation-menu';
 import { Link, usePage } from '@inertiajs/react';
 import { Boxes, Home, LayoutDashboard, LogIn, LogOut, ShoppingBag, ShoppingCart, User, UserPlus } from 'lucide-react';
+import NavMobile from './NavMobile';
 
 export default function Header() {
     const { auth, data } = usePage().props;
@@ -43,20 +44,22 @@ export default function Header() {
     });
 
     return (
-        <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 top-0 z-50 border-b px-6 backdrop-blur">
+        <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 top-0 border-b px-6">
             <div className="flex h-16 w-full items-center justify-between">
                 {/* Logo */}
                 <Link href={route('home')}>
                     <div className="mr-4 flex items-center space-x-2">
                         <ShoppingBag className="h-6 w-6" />
-                        <span className="text-xl font-bold">Galaxy Market</span>
+                        <span className="min-w-max text-xl font-bold">Galaxy Market</span>
                     </div>
                 </Link>
 
                 {/* Navigation */}
-                <NavigationMenu className="mx-6 flex gap-3 md:flex">
+                <NavigationMenu className="mx-6 hidden gap-3 md:flex">
                     <NavigationMenuList className="flex gap-5 text-sm">{nav}</NavigationMenuList>
                 </NavigationMenu>
+
+                <NavMobile />
 
                 {/* Actions
                 <div className="ml-auto flex items-center space-x-4">
