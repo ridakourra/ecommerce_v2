@@ -96,8 +96,8 @@ class CategoryController extends Controller
 
 
 
-    public function getCategories(Request $req, Category $category)
+    public function getCategories(Request $req, ?Category $category)
     {
-        return response()->json(['categories' => Category::where('parent_id', $category->id)->get()]);
+        return response()->json(['categories' => Category::where('parent_id', $category->id ?? null)->get()]);
     }
 }

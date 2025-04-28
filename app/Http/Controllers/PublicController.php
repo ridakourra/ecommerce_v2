@@ -4,17 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\CartItem;
 use App\Models\Category;
+use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class PublicController extends Controller
 {
-    public function home()
+    public function home(Request $request)
     {
         $products = Product::where('status', 'approved')
-            ->limit(4)
+            ->where('stock', '>', 0)
+            ->limit(5)
             ->get()
             ->map(fn($product) => [
                 'id' => $product->id,
@@ -23,13 +26,27 @@ class PublicController extends Controller
                 'price' => (float) $product->price,
                 'discount' => (float) $product->discount,
                 'image' => $product->image,
-                'inCart' => Auth::check() ?
+                'in_cart' => Auth::check() ?
                     CartItem::where('user_id', Auth::id())
                     ->where('product_id', $product->id)
                     ->exists() :
                     false
             ]);
-        return Inertia::render('public/Home', ['products' => $products]);
+
+
+        $bestProducts = OrderItem::select('product_id', DB::raw('COUNT(*) as total_sales'))
+            ->groupBy('product_id')
+            ->orderByDesc('total_sales')
+            ->with('product.inCart')
+            ->whereHas('product', function ($q) use ($request) {
+                $q->where('stock', '>', 0);
+                $q->where('status', 'approved');
+            })
+            ->limit(5)
+            ->get();
+
+
+        return Inertia::render('public/Home', ['products' => $products, 'bestProducts' => $bestProducts]);
     }
 
     public function cartItems()
@@ -43,60 +60,73 @@ class PublicController extends Controller
 
     public function menu(Request $request)
     {
-        $query = Product::query()->with(['category']);
+        /**
+         * name
+         * brand
+         * 
+         * price [min - max]
+         * 
+         * categories [dep - cat - typ]
+         * 
+         * get data of brand
+         * get data of categories
+         */
+        $query = Product::query()->where('stock', '>', 0)->with('inCart');
 
-        // Get current user's cart items
-        $userCartItems = Auth::check()
-            ? CartItem::where('user_id', Auth::id())->pluck('product_id')->toArray()
-            : [];
 
-        if ($request->search) {
-            $query->where('name', 'like', "%{$request->search}%");
+        // name
+        if ($request->filled('name')) {
+            $query->where('name', 'like', "%{$request->name}%");
         }
-
-        if ($request->category) {
-            $query->where('category_id', $request->category);
-        }
-
-        if ($request->brand) {
+        // brand
+        if ($request->filled('brand')) {
             $query->where('brand', $request->brand);
         }
-
-        if ($request->minPrice) {
+        // price min
+        if ($request->filled('minPrice')) {
             $query->where('price', '>=', $request->minPrice);
         }
-
-        if ($request->maxPrice) {
+        // price max
+        if ($request->filled('maxPrice')) {
             $query->where('price', '<=', $request->maxPrice);
         }
-
-        if ($request->sort) {
-            match ($request->sort) {
-                'price-asc' => $query->orderBy('price'),
-                'price-desc' => $query->orderBy('price', 'desc'),
-                default => $query->latest(),
-            };
+        // department
+        if ($request->filled('department')) {
+            $query->whereHas('category.parent.parent', function ($q) use ($request) {
+                $q->where('id', $request->department);
+            });
+        }
+        // category
+        if ($request->filled('category')) {
+            $query->whereHas('category.parent', function ($q) use ($request) {
+                $q->where('id', $request->category);
+            });
+        }
+        // type
+        if ($request->filled('type')) {
+            $query->where('category_id', $request->type);
         }
 
-        return Inertia::render('public/Menu', [
-            'products' => $query->paginate(12)->through(fn($product) => [
-                'id' => $product->id,
-                'name' => $product->name,
-                'description' => $product->description,
-                'price' => (float) $product->price,
-                'discount' => (float) $product->discount,
-                'image' => $product->image,
-                'brand' => $product->brand,
-                'inCart' => in_array($product->id, $userCartItems),
-                'category' => [
-                    'id' => $product->category->id,
-                    'name' => $product->category->name,
-                ],
-            ]),
-            'categories' => Category::select('id', 'name')->get(),
-            'brands' => Product::distinct()->pluck('brand'),
-            'filters' => $request->only(['search', 'category', 'brand', 'minPrice', 'maxPrice', 'sort', 'page']),
-        ]);
+
+        // brands
+        $brands = [];
+        foreach (Product::all() as $product) {
+            if (!in_array($product->brand, $brands)) {
+                $brands[] = $product->brand;
+            }
+        }
+
+
+        $products = $query->paginate(20)->withQueryString();
+        return Inertia::render('public/Menu', ['products' => $products, 'brands' => $brands, 'filters' => $request->only([
+            'name',
+            'brand',
+            'minPrice',
+            'minPrice',
+            'department',
+            'category',
+            'type'
+        ])]);
     }
 
     public function product(Product $product)
@@ -116,7 +146,7 @@ class PublicController extends Controller
                 'discount' => (float) $related->discount,
                 'image' => $related->image,
                 'brand' => $related->brand,
-                'inCart' => in_array($related->id, $userCartItems),
+                'in_cart' => in_array($related->id, $userCartItems),
                 'category' => [
                     'id' => $related->category->id,
                     'name' => $related->category->name,
@@ -132,7 +162,7 @@ class PublicController extends Controller
                 'discount' => (float) $product->discount,
                 'image' => $product->image,
                 'brand' => $product->brand,
-                'inCart' => in_array($product->id, $userCartItems),
+                'in_cart' => in_array($product->id, $userCartItems),
                 'cart' => CartItem::where('product_id', $product->id)->where('user_id', Auth::id())->first(),
                 'category' => [
                     'id' => $product->category->id,

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CartItemController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\OrderController;
@@ -13,9 +14,6 @@ Route::get('/cart', [CartItemController::class, 'index'])->name('cart.index');
 Route::get('/menu', [PublicController::class, 'menu'])->name('menu');
 Route::get('/products/{product}', [PublicController::class, 'product'])->name('public.products.show');
 
-Route::get('/test', function () {
-    return back()->with('message', 'this is the message test!!');
-});
 Route::get('/test-tsx', function () {
     return Inertia::render('test');
 });
@@ -39,6 +37,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/cart/cart-plus/{cartItem}', [CartItemController::class, 'cartPlus'])->name('cart.cartPlus');
     // Cart Items
     Route::post('/cart/cart-less/{cartItem}', [CartItemController::class, 'cartLess'])->name('cart.cartLess');
+
+
+
+    // Get categories
+    Route::get('/categories/children/{category?}', [CategoryController::class, 'getCategories'])->name('getCategoriesById');
 });
 
 require __DIR__ . '/settings.php';

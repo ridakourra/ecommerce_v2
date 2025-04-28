@@ -34,8 +34,7 @@ Route::prefix('/admin')->middleware(['auth', 'verified', 'staff'])->group(functi
         # Approve product
         Route::post('/products/{product}/approve', [ProductController::class, 'approveProduct'])->name('products.update.approved');
     });
-    // Get categories
-    Route::get('/categories/children/{category}', [CategoryController::class, 'getCategories'])->name('getCategoriesById');
+    
 
     // Products
     # Index

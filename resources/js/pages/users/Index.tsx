@@ -40,14 +40,14 @@ export default function Index({ users, filters }: { users: any; filters: Filters
                 preserveState: true,
                 preserveScroll: true,
             });
-        }, 300),
+        }, 100),
         []
     );
 
     function handleReset() {
         setValues({});
         router.get(
-            '/users',
+            route('users.index'),
             {},
             {
                 preserveState: true,

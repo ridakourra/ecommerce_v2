@@ -49,6 +49,6 @@ class Product extends Model
 
     public function inCart()
     {
-        return CartItem::where('product_id', $this->id)->where('user_id', Auth::id())->count();
+        return $this->hasOne(CartItem::class)->where('user_id', Auth::id());
     }
 }

@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { LessCart, PlusCart } from '@/functions/Cart';
+import { DestroyCart, LessCart, PlusCart } from '@/functions/Cart';
 import { CartItem } from '@/types';
 import { router } from '@inertiajs/react';
 import { Minus, Plus, Trash2 } from 'lucide-react';
@@ -29,12 +29,6 @@ export function CartItemCard({ item }: CartItemProps) {
         );
     };
 
-    const removeItem = () => {
-        router.delete(route('cart.destroy', item.id), {
-            preserveScroll: true,
-        });
-    };
-
     const price = Number(item.product.price) || 0;
     const discount = Number(item.product.discount) || 0;
     const quantity = Number(item.quantity) || 0;
@@ -52,7 +46,7 @@ export function CartItemCard({ item }: CartItemProps) {
                             <h3 className="font-medium">{item.product.name}</h3>
                             {item.product.stock < 5 && <p className="text-xs text-red-500">Only {item.product.stock} left</p>}
                         </div>
-                        <Button variant="ghost" size="icon" className="text-destructive" onClick={removeItem}>
+                        <Button variant="ghost" size="icon" className="text-destructive" onClick={() => DestroyCart(item.product.id)}>
                             <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>

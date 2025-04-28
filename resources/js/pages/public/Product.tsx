@@ -69,15 +69,15 @@ export default function Product({ product, relatedProducts }: Props) {
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    onClick={() => (product.inCart ? LessCart(product.cart.id) : AddToCart(product.id))}
+                                    onClick={() => (product.in_cart ? LessCart(product.cart.id) : AddToCart(product.id))}
                                 >
                                     <Minus className="h-4 w-4" />
                                 </Button>
-                                <span className="w-12 text-center font-medium">{product.inCart ? product.cart.quantity : 1}</span>
+                                <span className="w-12 text-center font-medium">{product.in_cart ? product.cart.quantity : 1}</span>
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    onClick={() => (product.inCart ? PlusCart(product.cart.id) : AddToCart(product.id))}
+                                    onClick={() => (product.in_cart ? PlusCart(product.cart.id) : AddToCart(product.id))}
                                 >
                                     <Plus className="h-4 w-4" />
                                 </Button>
@@ -86,7 +86,7 @@ export default function Product({ product, relatedProducts }: Props) {
 
                         {/* Action Buttons */}
                         <div className="mb-6 flex gap-4">
-                            {product.inCart ? (
+                            {product.in_cart ? (
                                 <>
                                     <Button variant="destructive" onClick={() => DestroyCart(product.id)} className="w-full" size="lg">
                                         <ArrowLeft className="mr-2 h-4 w-4" />

@@ -1,40 +1,64 @@
-import { Button } from '@/components/ui/button';
-import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
-import { cn } from '@/lib/utils';
+import { NavigationMenu, NavigationMenuList } from '@/components/ui/navigation-menu';
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutDashboard, LogInIcon, LogOutIcon, ShoppingBag, User, UserPlus } from 'lucide-react';
+import { Boxes, Home, LayoutDashboard, LogIn, LogOut, ShoppingBag, ShoppingCart, User, UserPlus } from 'lucide-react';
 
 export default function Header() {
     const { auth, data } = usePage().props;
 
     const navigation = [
-        { name: 'Home', href: '/' },
-        { name: 'Products', href: route('menu') },
+        { name: 'Home', href: '/', icon: Home, role: 'all' },
+        { name: 'Products', href: route('menu'), icon: Boxes, role: 'all' },
+        { name: 'Profile', href: route('public.profile.edit'), icon: User, role: ['auth'] },
+        { name: 'Dashboard', href: route('dashboard'), icon: LayoutDashboard, role: ['seller', 'admin'] },
+        { name: 'Cart', href: route('cart.index'), icon: ShoppingCart, role: ['auth'] },
+        { name: 'Logout', href: route('logout'), icon: LogOut, role: ['auth'] },
+        { name: 'Login', href: route('login'), icon: LogIn, role: ['guest'] },
+        { name: 'Register', href: route('register'), icon: UserPlus, role: ['guest'] },
     ];
+
+    const nav = navigation.map((nv, key) => {
+        const Icon = nv.icon;
+
+        // roles logic
+        if (
+            nv.role === 'all' ||
+            (nv.role.includes('auth') && auth.user) ||
+            (nv.role.includes('guest') && !auth.user) ||
+            (auth.user && nv.role.includes(auth.user.role))
+        ) {
+            return (
+                <Link method={nv.name === 'Logout' ? 'post' : 'get'} key={key} href={nv.href} className="relative flex gap-1 hover:text-gray-800">
+                    {nv.name === 'Cart' && (
+                        <span className="bg-primary text-primary-foreground absolute -top-2 -left-2 flex h-5 w-5 items-center justify-center rounded-full text-[10px]">
+                            {data?.countCart}
+                        </span>
+                    )}
+                    <Icon className="h-5 w-5" />
+                    <span>{nv.name}</span>
+                </Link>
+            );
+        }
+
+        return null;
+    });
 
     return (
         <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 top-0 z-50 border-b px-6 backdrop-blur">
-            <div className="flex h-16 w-full items-center">
+            <div className="flex h-16 w-full items-center justify-between">
                 {/* Logo */}
-                <div className="mr-4 flex items-center space-x-2">
-                    <ShoppingBag className="h-6 w-6" />
-                    <span className="text-xl font-bold">Galaxy Market</span>
-                </div>
+                <Link href={route('home')}>
+                    <div className="mr-4 flex items-center space-x-2">
+                        <ShoppingBag className="h-6 w-6" />
+                        <span className="text-xl font-bold">Galaxy Market</span>
+                    </div>
+                </Link>
 
                 {/* Navigation */}
-                <NavigationMenu className="mx-6 hidden md:flex">
-                    <NavigationMenuList>
-                        {navigation.map((item) => (
-                            <NavigationMenuItem key={item.name}>
-                                <Link href={item.href} className={cn(navigationMenuTriggerStyle(), 'cursor-pointer')}>
-                                    {item.name}
-                                </Link>
-                            </NavigationMenuItem>
-                        ))}
-                    </NavigationMenuList>
+                <NavigationMenu className="mx-6 flex gap-3 md:flex">
+                    <NavigationMenuList className="flex gap-5 text-sm">{nav}</NavigationMenuList>
                 </NavigationMenu>
 
-                {/* Actions */}
+                {/* Actions
                 <div className="ml-auto flex items-center space-x-4">
                     {auth.user ? (
                         <>
@@ -79,7 +103,7 @@ export default function Header() {
                             </Button>
                         </>
                     )}
-                </div>
+                </div> */}
             </div>
         </header>
     );
