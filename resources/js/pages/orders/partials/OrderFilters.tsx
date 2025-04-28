@@ -30,7 +30,6 @@ export default function OrderFilters({ filters, filtersState, onFilterChange, on
                         <SelectValue placeholder="Filter by user" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">All Users</SelectItem> {/* قيمة غير فارغة هنا */}
                         {filters.users.map((user) => (
                             <SelectItem key={user.id} value={user.id.toString()}>
                                 {user.first_name} {user.last_name}
@@ -44,7 +43,6 @@ export default function OrderFilters({ filters, filtersState, onFilterChange, on
                         <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">All Statuses</SelectItem> {/* القيمة غير فارغة هنا */}
                         {filters.statuses.map((status) => (
                             <SelectItem key={status} value={status}>
                                 {status}
@@ -58,7 +56,6 @@ export default function OrderFilters({ filters, filtersState, onFilterChange, on
                         <SelectValue placeholder="Filter by payment status" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">All Payment Statuses</SelectItem>
                         {filters.payment_statuses.map((status) => (
                             <SelectItem key={status} value={status}>
                                 {status}
@@ -72,7 +69,6 @@ export default function OrderFilters({ filters, filtersState, onFilterChange, on
                         <SelectValue placeholder="Filter by payment method" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">All Payment Methods</SelectItem> {/* القيمة غير فارغة هنا */}
                         {filters.payment_methods.map((method) => (
                             <SelectItem key={method} value={method}>
                                 {method}

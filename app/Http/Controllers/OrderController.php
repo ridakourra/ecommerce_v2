@@ -19,18 +19,14 @@ class OrderController extends Controller
         $query = Order::query()
             ->with(['items.product', 'user']);
 
-        // فلترة حسب المستخدم إذا كان بائعًا (seller)
         if ($user->isSeller()) {
-            // استخراج كل المنتجات التي يملكها البائع
             $productIds = $user->products()->pluck('id');
 
-            // جلب الطلبات التي تحتوي على أحد منتجات البائع
             $query->whereHas('items', function ($q) use ($productIds) {
                 $q->whereIn('product_id', $productIds);
             });
         }
 
-        // ✅ الفلاتر العامة
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -59,10 +55,8 @@ class OrderController extends Controller
             });
         }
 
-        // الترتيب الأحدث أولاً
         $query->orderBy('created_at', 'desc');
 
-        // ✅ التصفح (pagination)
         $orders = $query->paginate(15);
         return inertia('orders/Index', [
             'orders' => $orders,
@@ -90,12 +84,12 @@ class OrderController extends Controller
         // If user is admin, show all order details
         if ($user->isAdmin()) {
             $order->load(['items.product.user', 'user']);
-            
+
             return inertia('orders/Show', [
                 'order' => $order,
             ]);
         }
-        
+
         // If user is seller, only show their products in the order
         if ($user->isSeller()) {
             $productIds = $user->products()->pluck('id');
@@ -108,13 +102,13 @@ class OrderController extends Controller
 
             // Load the order with only the seller's products
             $order->load(['user']);
-            
+
             // Filter order items to only include seller's products
             $sellerItems = $order->items()->whereIn('product_id', $productIds)->with('product.user')->get();
-            
+
             // Calculate seller's subtotal
             $sellerSubtotal = $sellerItems->sum('subtotal');
-            
+
             return inertia('orders/Show', [
                 'order' => $order,
                 'sellerItems' => $sellerItems,
@@ -125,7 +119,7 @@ class OrderController extends Controller
 
         // For other users (like customers viewing their own orders)
         $order->load(['items.product.user', 'user']);
-        
+
         return inertia('orders/Show', [
             'order' => $order,
         ]);
@@ -137,10 +131,10 @@ class OrderController extends Controller
             'order_id' => ['required', 'exists:orders,id'],
             'status' => ['required', 'string', 'in:pending,processing,shipped,delivered,cancelled'],
         ]);
-    
+
         $order = Order::findOrFail($validated['order_id']);
         $order->update(['status' => $validated['status']]);
-    
+
         return back()->with('success', 'Order status updated successfully');
     }
 
@@ -219,7 +213,7 @@ class OrderController extends Controller
                 ->with('success', 'Order placed successfully');
         });
     }
-    
+
 
     public function destroy(Order $order)
     {
@@ -230,12 +224,10 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'order_id' => ['required', 'exists:orders,id'],
-            'archived' => ['required','boolean'],   
+            'archived' => ['required', 'boolean'],
         ]);
         $order = Order::findOrFail($validated['order_id']);
         $order->update(['archived' => $validated['archived']]);
         return back()->with('success', 'Order archived successfully');
     }
-
-    
 }

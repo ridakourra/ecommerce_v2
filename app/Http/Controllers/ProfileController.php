@@ -15,7 +15,7 @@ class ProfileController extends Controller
             ->with(['items.product'])
             ->latest()
             ->get();
-        
+
         return Inertia::render('public/Profile', ['orders' => $orders]);
     }
 
@@ -25,9 +25,9 @@ class ProfileController extends Controller
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,' . auth()->id()],
-            'country' => ['required', 'string'],
-            'city' => ['required', 'string'],
-            'address' => ['required', 'string', 'max:255'],
+            'country' => ['nullable', 'string'],
+            'city' => ['nullable', 'string'],
+            'address' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:255'],
             'date_birth' => ['nullable', 'date'],
             'avatar' => ['nullable', 'image', 'max:2048'],

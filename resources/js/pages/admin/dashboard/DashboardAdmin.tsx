@@ -88,7 +88,7 @@ export default function DashboardAdmin({
     const cards: DashboardCard[] = [
         {
             title: 'Revenue',
-            value: `$${totalRevenue.toFixed(2)}`,
+            value: `${Number(totalRevenue)}`,
             icon: <DollarSign className="text-green-500 h-8 w-8" />,
             description: 'Total Revenue',
             color: 'bg-green-50 dark:bg-green-900/20'
@@ -191,7 +191,7 @@ export default function DashboardAdmin({
                                                         </div>
                                                     </div>
                                                 </Td>
-                                                <Td>${Number(order.total_price).toFixed(2)}</Td>
+                                                <Td>${Number(order.total_price)}</Td>
                                                 <Td>
                                                     <span className={`px-2 py-1 rounded-full text-xs ${getPaymentStatusClass(order.payment_status)}`}>
                                                         {order.payment_status === 'paid' ? 'Paid' : 
@@ -228,7 +228,7 @@ export default function DashboardAdmin({
                                                 </div>
                                                 <div>
                                                     <div className="font-medium">{product.name}</div>
-                                                    <div className="text-muted-foreground text-xs">${product.price.toFixed(2)}</div>
+                                                    <div className="text-muted-foreground text-xs">${product.price}</div>
                                                 </div>
                                             </div>
                                             <div className="text-sm font-medium">
